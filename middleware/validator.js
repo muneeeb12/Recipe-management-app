@@ -11,7 +11,7 @@ const validateUserRegistration = [
 
   body('password')
     .isLength({ min: 8 })
-    .withMessage('Password must be at least 6 characters long'),
+    .withMessage('Password must be at least 8 characters long'),
 
   body('role')
     .optional() 
@@ -27,6 +27,7 @@ const validateUserRegistration = [
   }
 ];
 
+
 module.exports = {
-  validateUserRegistration
+  validateUserRegistration,
 };
