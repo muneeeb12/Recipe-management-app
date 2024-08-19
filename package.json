@@ -1,0 +1,21 @@
+{
+  "name": "recipe-management-app",
+  "version": "1.0.0",
+  "description": "Overview: Create an API where users can submit, search, and manage recipes, complete with ingredients and preparation steps.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.3",
+    "nodemon": "^3.1.4"
+  }
+}
