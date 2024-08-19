@@ -1,6 +1,6 @@
 const User = require("../model/userModel");
 const bcrypt = require('bcrypt');
-//const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 const registerController = async (req, res) => {
     try {
@@ -52,6 +52,14 @@ const loginController = async (req,res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
+
+        if(!email || !password){
+            return res.status(500).send({
+                success:false,
+                message:"please provide all fields"
+                })
+        }
+
         if(!user){
             return res.status(400).send({
                 success: false,
@@ -65,14 +73,14 @@ const loginController = async (req,res) => {
                 message: 'Invalid email or password'
                 });
             }
-            // const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY,
-            //     {
-            //         expiresIn: '7d',
-            //     });
+            const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY,
+                {
+                    expiresIn: '7d',
+                });
             return res.status(200).send({
                 success: true,
                 message: 'User logged in successfully',
-                //token,
+                token,
                 user     
             })
 

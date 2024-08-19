@@ -8,8 +8,6 @@ const app = express();
 
 app.use(express.json());
 
-
-
 app.use('/api/auth', require('./router/authRoutes'));
 
 const PORT = process.env.PORT || 3000;
