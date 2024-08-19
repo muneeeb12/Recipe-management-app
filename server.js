@@ -9,6 +9,7 @@ const app = express();
 app.use(express.json());
 
 app.use('/api/auth', require('./router/authRoutes'));
+app.use('/api/user', require('./router/userRoutes'))
 
 const PORT = process.env.PORT || 3000;
 
