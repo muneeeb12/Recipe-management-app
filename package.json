@@ -4,7 +4,7 @@
   "description": "Overview: Create an API where users can submit, search, and manage recipes, complete with ingredients and preparation steps.",
   "main": "server.js",
   "scripts": {
-    "start": "node .",
+    "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "keywords": [],
