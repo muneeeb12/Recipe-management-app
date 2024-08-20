@@ -26,8 +26,7 @@ const getusercontroller = async(req,res) => {
 
 const updateUser = async(req,res) => {
     try {
-        const id = req.params.id;
-        const user = await User.findOne(id);
+        const user = await User.findById({_id:req.body.id});
         if(!user){
             return res.status(500).send({
                 success: false,
@@ -56,6 +55,7 @@ const updateUser = async(req,res) => {
         
     }
 }
+
 
 const updatepassword = async(req,res) => {
     try {
@@ -93,8 +93,57 @@ const updatepassword = async(req,res) => {
     }
 }
 
+const passwordresetcontroller = async(req,res) => {
+    try {
+        const {email,newpassword,answer}  = req.body;
+        const user = await User.findOne({email,answer});
+        if(!user){
+            return res.status(404).send({
+                success:false,
+                message: "User not found or invalid answer"
+                })
+        }
+    
+        user.password = await bcrypt.hash(newpassword, 10);
+        await user.save();
+        return res.status(200).send({
+            success: true,
+            message: "Password updated",
+            user
+            });
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success:false,
+            message:"Error occured!",
+            error
+        })
+        
+    }
+}
+
+const deleteuserprofile = async(req,res) => {
+    try{
+        await User.findByIdAndDelete(req.params.id);
+        return res.status(200).send({
+            success: true,
+            message: "User deleted successfully"
+            })
+    }
+    catch(error){
+        console.log(error);
+        return res.status(500).send({
+            success:false,
+            message: "Error Occured",
+            error
+        })
+    }
+}
 module.exports = {
     getusercontroller,
     updateUser,
-    updatepassword
+    updatepassword,
+    passwordresetcontroller,
+    deleteuserprofile
 }

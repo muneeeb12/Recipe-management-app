@@ -18,6 +18,12 @@ const validateUserRegistration = [
     .isIn(['user', 'admin'])
     .withMessage('Invalid role'),
 
+  body('answer')
+    .notEmpty()
+    .withMessage('Answer is required')
+    .isString()
+    .withMessage('Answer must be a string'),
+
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

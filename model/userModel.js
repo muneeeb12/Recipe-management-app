@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
+    answer:{
+        type:String,
+        required:[true, 'Answer is required!'],
+    },
 }, { timestamps: true });
 
 userSchema.methods.comparePassword = function(enteredPassword) {
