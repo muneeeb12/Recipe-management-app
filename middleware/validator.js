@@ -43,8 +43,19 @@ const validateUserLogin = [
     .withMessage('Password must be at least 8 characters long'),
 ]
 
+const validateUserPasswordReset = [
+  body('email')
+    .isEmail()
+    .withMessage('Please enter a valid email address'),
+  body('answer')
+    .notEmpty()
+    .withMessage('Answer is required')
+    .isString()
+    .withMessage('Answer must be a string'),
+]
 
 module.exports = {
   validateUserRegistration,
   validateUserLogin,
+  validateUserPasswordReset,
 };
