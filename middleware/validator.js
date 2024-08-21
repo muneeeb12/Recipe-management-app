@@ -14,7 +14,7 @@ const validateUserRegistration = [
     .withMessage('Password must be at least 8 characters long'),
 
   body('role')
-    .optional() 
+    .optional()
     .isIn(['user', 'admin'])
     .withMessage('Invalid role'),
 
@@ -33,7 +33,18 @@ const validateUserRegistration = [
   }
 ];
 
+const validateUserLogin = [
+  body('email')
+    .isEmail()
+    .withMessage('Please enter a valid email address'),
+
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long'),
+]
+
 
 module.exports = {
   validateUserRegistration,
+  validateUserLogin,
 };

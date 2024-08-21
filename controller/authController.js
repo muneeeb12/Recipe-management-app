@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const registerController = async (req, res) => {
     try {
-        const { username, email, password, role ,answer} = req.body;
+        const { username, email, password, role, answer } = req.body;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -24,7 +24,6 @@ const registerController = async (req, res) => {
             answer
         });
 
-
         await newUser.save();
 
         return res.status(201).send({
@@ -34,7 +33,7 @@ const registerController = async (req, res) => {
                 username: newUser.username,
                 email: newUser.email,
                 role: newUser.role,
-                answer:newUser.answer,
+                answer: newUser.answer,
                 createdAt: newUser.createdAt,
                 updatedAt: newUser.updatedAt
             }
@@ -50,56 +49,54 @@ const registerController = async (req, res) => {
     }
 }
 
-const loginController = async (req,res) => {
+const loginController = async (req, res) => {
     try {
         const { email, password } = req.body;
+
         const user = await User.findOne({ email });
-
-        if(!email || !password){
-            return res.status(500).send({
-                success:false,
-                message:"please provide all fields"
-                })
-        }
-
-        if(!user){
+        if (!user) {
             return res.status(400).send({
                 success: false,
                 message: 'Invalid email or password'
             });
         }
-        const isValidPassword = await bcrypt.compare(password, user.password);
-        if(!isValidPassword){
-            return res.status(400).send({
-                success:false,
-                message: 'Invalid email or password'
-                });
-            }
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET,
-                {
-                    expiresIn: '7d',
-                });
-            return res.status(200).send({
-                success: true,
-                message: 'User logged in successfully',
-                token,
-                user     
-            })
 
-        
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            return res.status(400).send({
+                success: false,
+                message: 'Invalid email or password'
+            });
+        }
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: '7d',
+        });
+
+        return res.status(200).send({
+            success: true,
+            message: 'User logged in successfully',
+            token,
+            user: {
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            }
+        });
+
     } catch (error) {
         console.log(error);
         return res.status(500).send({
             success: false,
             message: "Error in Login API",
             error
-        })
-        
+        });
     }
 }
 
-module.exports = { 
-    registerController ,
+module.exports = {
+    registerController,
     loginController,
-
 };
