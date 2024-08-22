@@ -10,8 +10,7 @@ app.use(express.json());
 
 app.use('/api/auth', require('./router/authRoutes'));
 app.use('/api/user', require('./router/userRoutes'));
-app.use('https://www.themealdb.com/api/json/v1/1',require('./router/Reciperoutes')); 
-
+app.use('/api/recipe',require('./router/reciperoutes'));
 
 const PORT = process.env.PORT || 3000;
 
