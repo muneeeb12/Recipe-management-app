@@ -14,7 +14,6 @@ const validateUserRegistration = [
     .withMessage('Password must be at least 8 characters long'),
 
   body('role')
-    .optional()
     .isIn(['user', 'admin'])
     .withMessage('Invalid role'),
 
@@ -54,8 +53,40 @@ const validateUserPasswordReset = [
     .withMessage('Answer must be a string'),
 ]
 
+
+const validateRecipeSubmission = [
+  body('title')
+    .notEmpty()
+    .withMessage('Title is required')
+    .isString()
+    .withMessage('Title must be a string'),
+  body('description')
+    .notEmpty()
+    .withMessage('Description required')
+    .isString()
+    .withMessage('Description must be a string'),
+  body('instructions')
+  .notEmpty()
+  .withMessage('Instructions are required')
+  .isString()
+  .withMessage('Instructions must be an array'),
+  body('cookingTime')
+  .isInt()
+  .withMessage('Cooking time must be an integer'),
+  body('servings')
+  .isInt()
+  .withMessage('Servings must be an integer'),
+  body('category')
+  .isIn(['breakfast', 'lunch', 'dinner', 'snack'])
+  .withMessage('Category must be one of the following: breakfast, lunch, dinner, snack'),
+  body('cuisine')
+  .isIn(['italian', 'mexican', 'chinese', 'indian'])
+  .withMessage('Cuisine must be one of the following'),
+  ];
+
 module.exports = {
   validateUserRegistration,
   validateUserLogin,
   validateUserPasswordReset,
+  validateRecipeSubmission
 };
