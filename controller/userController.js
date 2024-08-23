@@ -1,149 +1,98 @@
-const User  = require("../model/userModel");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const User = require("../model/userModel");
 
-const getusercontroller = async(req,res) => {
-    try {
-        const user = await User.find();
-        if(!user){
-            return res.status(404).json({message:"User not found"})
-        }
-        user.password = undefined;
-        return res.status(200).send({
-            success: true,
-            message: "User found",
-            user,
-            });
-        
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            message: "Error Occured"
-        });
+const getUserController = async (req, res) => {
+  try {
+    const user = await User.findById(req.body.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-}
+    return res.status(200).json({
+      success: true,
+      message: "User found",
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "An error occurred",
+      error,
+    });
+  }
+};
 
+const updateUserController = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const user = await User.findById(id);
 
-const updateUser = async(req,res) => {
-    try {
-        const user = await User.findById({_id:req.body.id});
-        if(!user){
-            return res.status(500).send({
-                success: false,
-                message: "User not found",
-                });
-            }
-            const{username,email} = req.body;
-            if(username) user.username = username;
-            if(email) user.email = email;
-            await user.save();
-            return res.status(200).send({
-                success: true,
-                message: "User updated",
-                user
-                });
-            
-        
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            success:false,
-            message: "Error Occured",
-            error
-        });
-
-        
+    // Ensure the user is updating their own account
+    if (req.body.id !== String(user._id)) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update this account",
+      });
     }
-}
 
+    // Only allow updates to the username, answer, and password fields
+    const { username, answer, password } = req.body;
 
-const updatepassword = async(req,res) => {
-    try {
-        const user = await User.findById({ _id: req.body.id });
-        if (!user) {
-            return res.status(404).send({
-                success:false,
-                message: "User not found"
-                })
-        }
-        const { oldpassword, newpassword } = req.body;
-        const isValidPassword = await bcrypt.compare(oldpassword, user.password);
-        if (!isValidPassword) {
-            return res.status(401).send({
-                success: false,
-                message: "Invalid old password"
-            });
-        }
-
-        user.password = await bcrypt.hash(newpassword, 10);
-        await user.save();
-        return res.status(200).send({
-            success: true,
-            message: "Password updated",
-            user
-            });
-        
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            success:false,
-            message: "Error Occured",
-            error
-        })        
+    if (username) user.username = username;
+    if (answer) user.answer = answer;
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
     }
-}
 
-const passwordresetcontroller = async(req,res) => {
-    try {
-        const {email,newpassword,answer}  = req.body;
-        const user = await User.findOne({email,answer});
-        if(!user){
-            return res.status(404).send({
-                success:false,
-                message: "User not found or invalid answer"
-                })
-        }
-    
-        user.password = await bcrypt.hash(newpassword, 10);
-        await user.save();
-        return res.status(200).send({
-            success: true,
-            message: "Password updated",
-            user
-            });
-        
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({
-            success:false,
-            message:"Error occured!",
-            error
-        })
-        
-    }
-}
+    await user.save();
 
-const deleteuserprofile = async(req,res) => {
-    try{
-        await User.findByIdAndDelete(req.params.id);
-        return res.status(200).send({
-            success: true,
-            message: "User deleted successfully"
-            })
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      user: {
+        username: user.username,
+        answer: user.answer,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred",
+      error,
+    });
+  }
+};
+
+const deleteUserController = async (req, res) => {
+  try {
+    const user = await User.findById(req.body.id);
+
+    // Ensure the user is deleting their own account
+    if (req.body.id !== String(user._id)) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to delete this account",
+      });
     }
-    catch(error){
-        console.log(error);
-        return res.status(500).send({
-            success:false,
-            message: "Error Occured",
-            error
-        })
-    }
-}
+
+    await User.findByIdAndDelete(req.body.id);
+
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred",
+      error,
+    });
+  }
+};
+
 module.exports = {
-    getusercontroller,
-    updateUser,
-    updatepassword,
-    passwordresetcontroller,
-    deleteuserprofile
-}
+  getUserController,
+  updateUserController,
+  deleteUserController,
+};
